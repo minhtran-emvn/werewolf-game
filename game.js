@@ -887,7 +887,17 @@ WerewolfGame.prototype.showVersionInfo = function() {
     const versionInfo = `
 🐺 Ma Sói Online - Version History
 
-v0.5.0-beta (Current)
+v0.6.0-beta (Current)
+- 🚨 CRITICAL FIX: Clients now enter game when host starts
+- 🚨 CRITICAL FIX: Players can now select other players
+- 🚨 CRITICAL FIX: Player grid properly populated
+- ✅ Players array synced in all handlers (ROLE_ASSIGNMENT, GAME_STATE_UPDATE)
+- ✅ selectPlayer() uses visibility check instead of gameState
+- ✅ Added feedback notifications when selecting players
+- ✅ Host syncs players before starting game
+- 📝 Extensive debug logging added
+
+v0.5.0-beta
 - 🐛 FIX: Players now transition to game screen when host starts
 - 🐛 FIX: Players can interact during game (night/day actions)
 - 🐛 FIX: Role assignment reaches all players including host
