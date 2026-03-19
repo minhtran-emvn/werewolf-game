@@ -65,8 +65,16 @@ class WerewolfGame {
         this.multiplayer.on('GAME_STATE_UPDATE', (data) => {
             this.gameState = data.gameState;
             this.phase = data.phase;
-            this.nightCount = data.nightCount || 0;
+            this.nightCount = data.nightCount || 1;
             this.dayCount = data.dayCount || 0;
+            
+            // Transition from lobby/room to game section
+            if (data.gameState === 'playing') {
+                document.getElementById('room-section')?.classList.add('hidden');
+                document.getElementById('game-section')?.classList.remove('hidden');
+                this.addGameLog('🌙 Đêm 1 bắt đầu!');
+            }
+            
             this.updateGameUI();
         });
 
@@ -75,6 +83,13 @@ class WerewolfGame {
             if (data.playerId === this.myPlayerId) {
                 this.myRole = data.role;
                 this.showMyRole(data.role);
+                
+                // For clients, also transition to game section when role is assigned
+                // (host triggers game state update separately)
+                setTimeout(() => {
+                    document.getElementById('room-section')?.classList.add('hidden');
+                    document.getElementById('game-section')?.classList.remove('hidden');
+                }, 500);
             }
         });
 
@@ -336,11 +351,25 @@ class WerewolfGame {
 
     /**
      * Update game UI based on phase
+     * Fixed: Ensure action buttons and players grid are populated
      */
     updateGameUI() {
+        console.log('updateGameUI called:', { 
+            phase: this.phase, 
+            nightCount: this.nightCount, 
+            myRole: this.myRole,
+            gameState: this.gameState 
+        });
+        
         const phaseDisplay = document.getElementById('phase-display');
         const nightNumber = document.getElementById('night-number');
         const phaseAction = document.getElementById('phase-action');
+        const actionButtons = document.getElementById('action-buttons');
+        
+        if (!phaseDisplay || !actionButtons) {
+            console.error('Game UI elements not found!');
+            return;
+        }
         
         if (this.phase === 'night') {
             phaseDisplay.className = 'phase-indicator night';
@@ -358,7 +387,10 @@ class WerewolfGame {
             this.setupDayActions();
         }
         
+        // Ensure players grid is updated
         this.updatePlayersGrid();
+        
+        console.log('updateGameUI complete');
     }
 
     /**

@@ -479,6 +479,7 @@ class MultiplayerWerewolf {
 
     /**
      * Start game (host only)
+     * Fixed: Ensure all players receive roles and game state
      */
     startGame(roles) {
         if (!this.isHost) return;
@@ -491,6 +492,8 @@ class MultiplayerWerewolf {
             [shuffledRoles[i], shuffledRoles[j]] = [shuffledRoles[j], shuffledRoles[i]];
         }
         
+        console.log('Starting game with roles:', shuffledRoles);
+        
         // Send roles to each player (secretly)
         this.players.forEach((player, index) => {
             const roleData = {
@@ -499,18 +502,37 @@ class MultiplayerWerewolf {
                 role: shuffledRoles[index]
             };
             
-            // Find connection for this player
-            const conn = this.connections.find(c => c.peer === player.id);
-            if (conn) {
+            // Find connection for this player OR send via any available connection
+            let conn = this.connections.find(c => c.peer === player.id);
+            
+            // If no direct connection found, broadcast to all (for host itself)
+            if (!conn && player.isHost) {
+                // Host sends to self
+                setTimeout(() => {
+                    if (this.messageHandlers['ROLE_ASSIGNMENT']) {
+                        this.messageHandlers['ROLE_ASSIGNMENT'](roleData);
+                    }
+                }, 100);
+            } else if (conn) {
+                console.log(`Sending role to ${player.name}:`, shuffledRoles[index]);
                 this.sendData(conn, roleData);
+            } else {
+                console.warn(`No connection found for player ${player.name}, broadcasting...`);
+                // Fallback: broadcast with playerId filter
+                this.broadcast(roleData);
             }
         });
         
-        // Broadcast game start
-        this.updateGameState('playing', {
-            phase: 'night',
-            dayCount: 0
-        });
+        // Small delay to ensure roles are received before game starts
+        setTimeout(() => {
+            // Broadcast game start
+            console.log('Broadcasting game state: playing');
+            this.updateGameState('playing', {
+                phase: 'night',
+                nightCount: 1,
+                dayCount: 0
+            });
+        }, 200);
     }
 }
 
