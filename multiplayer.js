@@ -192,9 +192,15 @@ class MultiplayerWerewolf {
     /**
      * Handle join request (host only)
      * Fixed: Also update host's local player list
+     * Enhanced: More logging for debugging
      */
     handleJoinRequest(conn, data) {
-        if (!this.isHost) return;
+        console.log('handleJoinRequest called:', data);
+        
+        if (!this.isHost) {
+            console.log('Not host, ignoring join request');
+            return;
+        }
         
         const newPlayer = {
             id: data.playerId,
@@ -203,9 +209,12 @@ class MultiplayerWerewolf {
             connected: true
         };
         
+        console.log('Adding player:', newPlayer);
         this.players.push(newPlayer);
+        console.log('Total players:', this.players.length);
         
         // Send acceptance with current player list
+        console.log('Sending JOIN_ACCEPTED to', data.playerId);
         this.sendData(conn, {
             type: 'JOIN_ACCEPTED',
             playerId: data.playerId,
@@ -213,6 +222,7 @@ class MultiplayerWerewolf {
         });
         
         // Broadcast player update to all connected clients
+        console.log('Broadcasting PLAYER_UPDATE');
         this.broadcast({
             type: 'PLAYER_UPDATE',
             players: this.players
@@ -228,10 +238,19 @@ class MultiplayerWerewolf {
 
     /**
      * Handle join acceptance (client only)
+     * Enhanced: More logging
      */
     handleJoinAccepted(data) {
+        console.log('JOIN_ACCEPTED received:', data);
         this.players = data.players;
-        console.log('Joined room, players:', this.players);
+        console.log('Client players updated:', this.players);
+        
+        // Trigger handler
+        if (this.messageHandlers['PLAYER_UPDATE']) {
+            this.messageHandlers['PLAYER_UPDATE']({
+                players: this.players
+            });
+        }
     }
 
     /**
