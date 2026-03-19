@@ -806,7 +806,15 @@ WerewolfGame.prototype.showVersionInfo = function() {
     const versionInfo = `
 🐺 Ma Sói Online - Version History
 
-v0.4.0-beta (Current)
+v0.5.0-beta (Current)
+- 🐛 FIX: Players now transition to game screen when host starts
+- 🐛 FIX: Players can interact during game (night/day actions)
+- 🐛 FIX: Role assignment reaches all players including host
+- 🐛 FIX: nightCount starts at 1 instead of 0
+- 🐛 FIX: Action buttons properly setup in updateGameUI()
+- 📝 Added debug logging for troubleshooting
+
+v0.4.0-beta
 - 👥 Removed 5-player minimum - play with any number (1+)
 - 🖥️ Fixed: Host now sees players joining in real-time
 - 🔒 Only allow joining existing rooms (5s timeout)
@@ -835,7 +843,7 @@ v0.1.0-alpha
 - 7 roles implemented
 
 ---
-Total Commits: 7
+Total Commits: 8
 Last Updated: ${new Date().toLocaleDateString('vi-VN')}
 Status: Beta Testing
     `;

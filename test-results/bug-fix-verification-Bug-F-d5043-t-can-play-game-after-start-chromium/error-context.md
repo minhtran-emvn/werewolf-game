@@ -1,0 +1,45 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - heading "🐺 Ma Sói Online" [level=1] [ref=e4]
+      - paragraph [ref=e5]: Werewolf Multiplayer Game - Chơi online với bạn bè
+    - generic [ref=e6]:
+      - heading "🎭 Ván Đấu" [level=2] [ref=e7]
+      - generic [ref=e9]:
+        - generic [ref=e10]: 🌙 Đêm 1
+        - generic [ref=e11]: Chọn người để giết
+      - generic [ref=e12]:
+        - generic [ref=e13]: "Vai trò của bạn:"
+        - generic [ref=e14]: 🐺
+        - generic [ref=e15]: Ma Sói
+        - generic [ref=e16]: Giết một người mỗi đêm
+      - heading "Người Chơi" [level=3] [ref=e17]
+      - generic [ref=e18]:
+        - generic [ref=e19] [cursor=pointer]:
+          - generic [ref=e20]: ✅
+          - generic [ref=e21]: 👤
+          - generic [ref=e22]: Host
+          - generic [ref=e23]: "#1"
+        - generic [ref=e24] [cursor=pointer]:
+          - generic [ref=e25]: ✅
+          - generic [ref=e26]: 👤
+          - generic [ref=e27]: Player2
+          - generic [ref=e28]: "#2"
+      - button "✅ Xác nhận hành động" [ref=e30] [cursor=pointer]
+      - generic [ref=e31]:
+        - heading "💬 Chat" [level=3] [ref=e32]
+        - generic [ref=e34]:
+          - textbox "Nhập tin nhắn..." [ref=e35]
+          - button "Gửi" [ref=e36] [cursor=pointer]
+      - generic [ref=e37]:
+        - heading "📜 Nhật Ký Game" [level=3] [ref=e38]
+        - generic [ref=e39]:
+          - generic [ref=e40]: 🌙 Đêm 1 bắt đầu!
+          - generic [ref=e41]: 🌙 Đêm 1 bắt đầu!
+  - generic "Click to see changelog" [ref=e42]:
+    - generic [ref=e43]: v0.4.0-beta
+    - generic [ref=e44]: BETA
+```
