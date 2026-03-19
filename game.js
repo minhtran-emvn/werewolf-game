@@ -887,7 +887,12 @@ WerewolfGame.prototype.showVersionInfo = function() {
     const versionInfo = `
 🐺 Ma Sói Online - Version History
 
-v0.6.0-beta (Current)
+v0.6.1-beta (Current)
+- 🔧 Added cache busting (?v=0.6.1) to force browser reload
+- 📝 Enhanced join flow logging for debugging
+- 📝 Now can trace: JOIN_REQUEST → JOIN_ACCEPTED → ROLE_ASSIGNMENT
+
+v0.6.0-beta
 - 🚨 CRITICAL FIX: Clients now enter game when host starts
 - 🚨 CRITICAL FIX: Players can now select other players
 - 🚨 CRITICAL FIX: Player grid properly populated
