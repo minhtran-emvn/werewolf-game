@@ -93,12 +93,20 @@ class MultiplayerWerewolf {
 
     /**
      * Connect to an existing room
+     * Fixed: Better error handling for non-existent rooms
      */
     async joinRoom(roomId, playerName) {
         return new Promise((resolve, reject) => {
             const conn = this.peer.connect(roomId);
             
+            // Timeout after 5 seconds if no response (room doesn't exist)
+            const timeout = setTimeout(() => {
+                conn.close();
+                reject(new Error('Phòng không tồn tại hoặc đã đóng: ' + roomId));
+            }, 5000);
+            
             conn.on('open', () => {
+                clearTimeout(timeout);
                 this.connections.push(conn);
                 this.roomId = roomId;
                 
@@ -113,7 +121,17 @@ class MultiplayerWerewolf {
             });
 
             conn.on('error', (err) => {
-                reject(new Error('Failed to connect to room: ' + roomId));
+                clearTimeout(timeout);
+                reject(new Error('Không thể kết nối phòng: ' + roomId));
+            });
+            
+            // Handle connection refused (room doesn't exist)
+            conn.on('close', () => {
+                if (this.connections.indexOf(conn) === -1) {
+                    // Connection closed before being added - likely doesn't exist
+                    clearTimeout(timeout);
+                    reject(new Error('Phòng không tồn tại: ' + roomId));
+                }
             });
         });
     }
@@ -173,6 +191,7 @@ class MultiplayerWerewolf {
 
     /**
      * Handle join request (host only)
+     * Fixed: Also update host's local player list
      */
     handleJoinRequest(conn, data) {
         if (!this.isHost) return;
@@ -193,11 +212,18 @@ class MultiplayerWerewolf {
             players: this.players
         });
         
-        // Broadcast player update to all
+        // Broadcast player update to all connected clients
         this.broadcast({
             type: 'PLAYER_UPDATE',
             players: this.players
         });
+        
+        // Trigger local handler to update host's UI
+        if (this.messageHandlers['PLAYER_UPDATE']) {
+            this.messageHandlers['PLAYER_UPDATE']({
+                players: this.players
+            });
+        }
     }
 
     /**

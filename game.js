@@ -195,15 +195,17 @@ class WerewolfGame {
 
     /**
      * Update player count
+     * Updated: No minimum player requirement - any number can start
      */
     updatePlayerCount() {
         const count = this.multiplayer.players.length;
         document.getElementById('player-count').textContent = count;
-        document.getElementById('start-game-btn').disabled = count < 5;
+        // Removed minimum player requirement - always enable start button
+        document.getElementById('start-game-btn').disabled = false;
         
         if (this.multiplayer.isHost) {
             document.getElementById('room-status').textContent = 
-                count >= 5 ? '✅ Sẵn sàng bắt đầu!' : `⏳ Cần thêm ${5 - count} người chơi`;
+                `✅ Sẵn sàng bắt đầu! (${count} người chơi)`;
         }
     }
 
@@ -248,28 +250,55 @@ class WerewolfGame {
 
     /**
      * Generate role distribution
+     * Updated: Support any player count (1+)
      */
     generateRoles(playerCount) {
         let roles = [];
         
-        if (playerCount <= 5) {
-            roles = ['werewolf', 'villager', 'villager', 'seer', 'hunter'];
-        } else if (playerCount <= 7) {
-            roles = ['werewolf', 'werewolf', 'villager', 'villager', 'villager', 'seer', 'hunter'];
+        // Scale roles based on player count
+        if (playerCount === 1) {
+            // Single player practice mode
+            roles = ['werewolf'];
+        } else if (playerCount === 2) {
+            roles = ['werewolf', 'seer'];
+        } else if (playerCount === 3) {
+            roles = ['werewolf', 'villager', 'seer'];
+        } else if (playerCount === 4) {
+            roles = ['werewolf', 'villager', 'villager', 'seer'];
+        } else if (playerCount <= 6) {
+            roles = ['werewolf', 'werewolf', 'villager', 'villager', 'seer', 'hunter'];
+        } else if (playerCount <= 8) {
+            roles = ['werewolf', 'werewolf', 'villager', 'villager', 'villager', 'seer', 'hunter', 'guard'];
         } else if (playerCount <= 10) {
             roles = ['werewolf', 'werewolf', 'villager', 'villager', 'villager', 'villager', 
                      'seer', 'hunter', 'witch', 'guard'];
-        } else {
+        } else if (playerCount <= 12) {
             roles = ['werewolf', 'werewolf', 'werewolf', 'villager', 'villager', 'villager',
-                     'villager', 'villager', 'seer', 'hunter', 'witch', 'guard', 'cupid'];
+                     'villager', 'villager', 'seer', 'hunter', 'witch', 'guard'];
+        } else {
+            // 13+ players - scale up
+            const werewolfCount = Math.ceil(playerCount / 4);
+            const specialRoles = ['seer', 'hunter', 'witch', 'guard', 'cupid'];
+            
+            roles = [];
+            for (let i = 0; i < werewolfCount; i++) {
+                roles.push('werewolf');
+            }
+            specialRoles.forEach(role => roles.push(role));
+            
+            // Fill rest with villagers
+            while (roles.length < playerCount) {
+                roles.push('villager');
+            }
         }
         
-        // Fill remaining with villagers
+        // Ensure we have exactly the right number
         while (roles.length < playerCount) {
             roles.push('villager');
         }
+        roles = roles.slice(0, playerCount);
         
-        // Shuffle roles
+        // Shuffle roles (Fisher-Yates)
         for (let i = roles.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [roles[i], roles[j]] = [roles[j], roles[i]];
